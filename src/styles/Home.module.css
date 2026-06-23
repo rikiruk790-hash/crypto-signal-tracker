@@ -1,9 +1,3 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 .container {
   min-height: 100vh;
   background: #0a0e1a;
@@ -170,4 +164,4 @@
   .statNumber {
     font-size: 22px;
   }
-  }
+}
