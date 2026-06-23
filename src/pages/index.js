@@ -103,7 +103,7 @@ export default function Home() {
       {/* হেডার */}
       <div className={styles.header}>
         <h1>📊 Crypto Signal Tracker</h1>
-        <p>RSI + MACD + Support/Resistance | 15m | TP: 1.5% | SL: 1%</p>
+        <p>RSI + MACD + Support/Resistance | 30m | TP: 1.5% | SL: 1%</p>
         {lastScan && <p style={{ color: '#aaa', fontSize: '12px' }}>Last scan: {lastScan}</p>}
       </div>
 
@@ -221,5 +221,5 @@ export default function Home() {
       </div>
     </div>
   )
-      }
-      
+                 }
+    
