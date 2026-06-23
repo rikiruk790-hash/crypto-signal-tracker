@@ -3,6 +3,7 @@ import {
   calculateRSI, getRSIState,
   calculateMACD,
   findSupportResistance,
+  generateSignal
 } from '../../lib/indicators'
 
 export default async function handler(req, res) {
@@ -18,24 +19,24 @@ export default async function handler(req, res) {
     const macd = calculateMACD(closes)
     const sr = findSupportResistance(highs, lows, closes)
 
-    const rsiBuyOk = rsi < 45 && rsiState.momentum === 'rising'
-    const rsiSellOk = rsi > 55 && rsiState.momentum === 'falling'
-    const macdBuyOk = macd.crossover === 'bullish' || (macd.macdAboveSignal && macd.histBullish)
-    const macdSellOk = macd.crossover === 'bearish' || (!macd.macdAboveSignal && macd.histBearish)
+    const signal = generateSignal({ sr, rsi, rsiState, macd, currentPrice })
 
     return res.status(200).json({
       symbol,
       currentPrice,
       rsi,
       rsiState,
-      rsiBuyOk,
-      rsiSellOk,
       macd,
-      macdBuyOk,
-      macdSellOk,
       sr,
-      buySignalPossible: sr.nearSupport && rsiBuyOk && macdBuyOk,
-      sellSignalPossible: sr.nearResistance && rsiSellOk && macdSellOk,
+      signal,
+      conditions: {
+        nearSupport: sr.nearSupport,
+        nearResistance: sr.nearResistance,
+        rsiBuyOk: rsi < 50,
+        rsiSellOk: rsi > 50,
+        macdBuyOk: macd.crossover === 'bullish' || macd.histBullish,
+        macdSellOk: macd.crossover === 'bearish' || macd.histBearish,
+      }
     })
   } catch (err) {
     return res.status(500).json({ error: err.message })
