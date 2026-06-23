@@ -44,15 +44,6 @@ export function getRSIState(rsi, prevRsi) {
 // =====================
 // EMA CALCULATION
 // =====================
-function calculateEMA(values, period) {
-  const k = 2 / (period + 1)
-  let ema = values[0]
-  for (let i = 1; i < values.length; i++) {
-    ema = values[i] * k + ema * (1 - k)
-  }
-  return ema
-}
-
 function calculateEMAArray(values, period) {
   const k = 2 / (period + 1)
   const emas = [values[0]]
@@ -89,16 +80,15 @@ export function calculateMACD(closes) {
   const histBullish = lastHist > prevHist || lastHist > 0
   const histBearish = lastHist < prevHist || lastHist < 0
 
-  return { crossover, histogram: lastHist, histBullish, histBearish }
+  return { crossover, histogram: lastHist, histBullish, histBearish, macdAboveSignal: lastMACD > lastSignal }
 }
 
 // =====================
 // SUPPORT & RESISTANCE
 // =====================
-export function findSupportResistance(highs, lows, closes, threshold = 0.015) {
+export function findSupportResistance(highs, lows, closes, threshold = 0.025) {
   const currentPrice = closes[closes.length - 1]
-  
-  // সুইং লো খোঁজা
+
   const swingLows = []
   for (let i = 2; i < lows.length - 2; i++) {
     if (lows[i] < lows[i-1] && lows[i] < lows[i-2] &&
@@ -107,7 +97,6 @@ export function findSupportResistance(highs, lows, closes, threshold = 0.015) {
     }
   }
 
-  // সুইং হাই খোঁজা
   const swingHighs = []
   for (let i = 2; i < highs.length - 2; i++) {
     if (highs[i] > highs[i-1] && highs[i] > highs[i-2] &&
@@ -116,18 +105,15 @@ export function findSupportResistance(highs, lows, closes, threshold = 0.015) {
     }
   }
 
-  // সাপোর্ট জোন (current price থেকে নিচে)
   const supportLevels = swingLows.filter(l => l < currentPrice)
   const resistanceLevels = swingHighs.filter(h => h > currentPrice)
 
-  const supportPrice = supportLevels.length > 0 
-    ? Math.max(...supportLevels) : null
-  const resistancePrice = resistanceLevels.length > 0 
-    ? Math.min(...resistanceLevels) : null
+  const supportPrice = supportLevels.length > 0 ? Math.max(...supportLevels) : null
+  const resistancePrice = resistanceLevels.length > 0 ? Math.min(...resistanceLevels) : null
 
-  const nearSupport = supportPrice && 
+  const nearSupport = supportPrice &&
     Math.abs(currentPrice - supportPrice) / supportPrice <= threshold
-  const nearResistance = resistancePrice && 
+  const nearResistance = resistancePrice &&
     Math.abs(resistancePrice - currentPrice) / resistancePrice <= threshold
 
   return {
@@ -135,8 +121,8 @@ export function findSupportResistance(highs, lows, closes, threshold = 0.015) {
     resistancePrice,
     nearSupport,
     nearResistance,
-    supportZone: supportLevels.length >= 2,
-    resistanceZone: resistanceLevels.length >= 2,
+    supportZone: supportLevels.length >= 1,
+    resistanceZone: resistanceLevels.length >= 1,
   }
 }
 
@@ -164,13 +150,17 @@ export function getGrade(score) {
 // SIGNAL GENERATOR
 // =====================
 export function generateSignal({ sr, rsi, rsiState, macd, currentPrice }) {
+
+  // RSI relax — oversold বা rising momentum
+  const rsiBuyOk = rsi < 45 && rsiState.momentum === 'rising'
+  const rsiSellOk = rsi > 55 && rsiState.momentum === 'falling'
+
+  // MACD relax — crossover অথবা macd above signal
+  const macdBuyOk = macd.crossover === 'bullish' || (macd.macdAboveSignal && macd.histBullish)
+  const macdSellOk = macd.crossover === 'bearish' || (!macd.macdAboveSignal && macd.histBearish)
+
   // BUY সিগন্যাল
-  if (
-    sr.nearSupport &&
-    (rsiState.state === 'oversold' || rsiState.oversoldRecovery) &&
-    macd.crossover === 'bullish' &&
-    macd.histBullish
-  ) {
+  if (sr.nearSupport && rsiBuyOk && macdBuyOk) {
     const score = calculateScore({
       srAlignment: true,
       rsiConfirm: true,
@@ -189,12 +179,7 @@ export function generateSignal({ sr, rsi, rsiState, macd, currentPrice }) {
   }
 
   // SELL সিগন্যাল
-  if (
-    sr.nearResistance &&
-    (rsiState.state === 'overbought' || rsiState.overboughtRejection) &&
-    macd.crossover === 'bearish' &&
-    macd.histBearish
-  ) {
+  if (sr.nearResistance && rsiSellOk && macdSellOk) {
     const score = calculateScore({
       srAlignment: true,
       rsiConfirm: true,
@@ -213,5 +198,4 @@ export function generateSignal({ sr, rsi, rsiState, macd, currentPrice }) {
   }
 
   return null
-    }
-    
+}
