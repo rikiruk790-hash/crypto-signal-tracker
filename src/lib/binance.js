@@ -1,33 +1,43 @@
-// Bybit API — সব জায়গা থেকে কাজ করে, 15m candle আছে
-const BYBIT_BASE = 'https://api.bybit.com'
+// CoinGecko API — কোনো restriction নেই, সম্পূর্ণ ফ্রি
+const COINGECKO_BASE = 'https://api.coingecko.com/api/v3'
 
-export const TOP_PAIRS = [
-  'BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT',
-  'ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT',
-  'LINKUSDT','LTCUSDT','UNIUSDT','ATOMUSDT','ETCUSDT',
-  'XLMUSDT','NEARUSDT','ALGOUSDT','APTUSDT','FILUSDT',
-  'ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','SEIUSDT',
-  'TIAUSDT','WLDUSDT','FETUSDT','GRTUSDT','SANDUSDT',
-  'MANAUSDT','APEUSDT','AAVEUSDT','MKRUSDT','SNXUSDT',
-  'COMPUSDT','CRVUSDT','RUNEUSDT','FTMUSDT','HBARUSDT',
-  'EGLDUSDT','FLOWUSDT','ICPUSDT','VETUSDT','THETAUSDT',
-  'QNTUSDT','KSMUSDT','ZECUSDT','ONEUSDT','ROSEUSDT'
-]
+// CoinGecko coin ID map
+const SYMBOL_TO_ID = {
+  'BTCUSDT': 'bitcoin', 'ETHUSDT': 'ethereum', 'BNBUSDT': 'binancecoin',
+  'SOLUSDT': 'solana', 'XRPUSDT': 'ripple', 'ADAUSDT': 'cardano',
+  'DOGEUSDT': 'dogecoin', 'AVAXUSDT': 'avalanche-2', 'DOTUSDT': 'polkadot',
+  'MATICUSDT': 'matic-network', 'LINKUSDT': 'chainlink', 'LTCUSDT': 'litecoin',
+  'UNIUSDT': 'uniswap', 'ATOMUSDT': 'cosmos', 'ETCUSDT': 'ethereum-classic',
+  'XLMUSDT': 'stellar', 'NEARUSDT': 'near', 'ALGOUSDT': 'algorand',
+  'APTUSDT': 'aptos', 'FILUSDT': 'filecoin', 'ARBUSDT': 'arbitrum',
+  'OPUSDT': 'optimism', 'INJUSDT': 'injective-protocol', 'SUIUSDT': 'sui',
+  'FETUSDT': 'fetch-ai', 'GRTUSDT': 'the-graph', 'SANDUSDT': 'the-sandbox',
+  'MANAUSDT': 'decentraland', 'AAVEUSDT': 'aave', 'MKRUSDT': 'maker',
+  'CRVUSDT': 'curve-dao-token', 'RUNEUSDT': 'thorchain', 'HBARUSDT': 'hedera-hashgraph',
+  'ICPUSDT': 'internet-computer', 'VETUSDT': 'vechain', 'THETAUSDT': 'theta-token',
+  'ZECUSDT': 'zcash', 'FLOWUSDT': 'flow', 'EGLDUSDT': 'elrond-erd-2',
+  'FTMUSDT': 'fantom', 'COMPUSDT': 'compound-governance-token', 'SNXUSDT': 'synthetix-network-token',
+  'APEUSDT': 'apecoin', 'SEIUSDT': 'sei-network', 'WLDUSDT': 'worldcoin-wld',
+  'TIAUSDT': 'celestia', 'ROSEUSDT': 'oasis-network', 'ONEUSDT': 'harmony',
+  'KSMUSDT': 'kusama', 'QNTUSDT': 'quant-network'
+}
 
-// Bybit থেকে 15m candle আনা
-export async function fetchKlines(symbol, interval = '30', limit = 100) {
-  const url = `${BYBIT_BASE}/v5/market/kline?category=spot&symbol=${symbol}&interval=${interval}&limit=${limit}`
-  
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`Bybit error: ${res.status}`)
-  const json = await res.json()
-  
-  if (json.retCode !== 0) throw new Error(`Bybit: ${json.retMsg}`)
-  
-  // Bybit returns newest first, so reverse
-  const data = json.result.list.reverse()
-  
-  if (data.length < 40) throw new Error(`Not enough candles: ${data.length}`)
+export const TOP_PAIRS = Object.keys(SYMBOL_TO_ID)
+
+// CoinGecko OHLC — 1 day = 30m candles (48 candles)
+export async function fetchKlines(symbol) {
+  const coinId = SYMBOL_TO_ID[symbol]
+  if (!coinId) throw new Error(`Unknown symbol: ${symbol}`)
+
+  const url = `${COINGECKO_BASE}/coins/${coinId}/ohlc?vs_currency=usd&days=1`
+
+  const res = await fetch(url, {
+    headers: { 'Accept': 'application/json' }
+  })
+  if (!res.ok) throw new Error(`CoinGecko error: ${res.status}`)
+  const data = await res.json()
+
+  if (!data || data.length < 10) throw new Error(`Not enough data`)
 
   return {
     opens:  data.map(k => parseFloat(k[1])),
@@ -39,10 +49,11 @@ export async function fetchKlines(symbol, interval = '30', limit = 100) {
 
 // লাইভ প্রাইস
 export async function fetchPrice(symbol) {
-  const url = `${BYBIT_BASE}/v5/market/tickers?category=spot&symbol=${symbol}`
+  const coinId = SYMBOL_TO_ID[symbol]
+  if (!coinId) throw new Error(`Unknown symbol: ${symbol}`)
+  const url = `${COINGECKO_BASE}/simple/price?ids=${coinId}&vs_currencies=usd`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Price fetch error`)
   const json = await res.json()
-  if (json.retCode !== 0) throw new Error(`Bybit price error`)
-  return parseFloat(json.result.list[0].lastPrice)
+  return parseFloat(json[coinId].usd)
 }
