@@ -1,6 +1,5 @@
 import { supabase } from '../../lib/supabase'
-import { fetchKlines } from '../../lib/binance'
-import { TOP_PAIRS } from '../../lib/binance'
+import { fetchKlines, TOP_PAIRS } from '../../lib/binance'
 import {
   calculateRSI, getRSIState,
   calculateMACD,
@@ -18,10 +17,9 @@ export default async function handler(req, res) {
 
   for (const symbol of TOP_PAIRS) {
     try {
-      const { highs, lows, closes } = await fetchKlines(symbol, '15min', 100)
+      const { highs, lows, closes } = await fetchKlines(symbol)
       const currentPrice = closes[closes.length - 1]
 
-      // ইন্ডিকেটর ক্যালকুলেশন
       const rsi = calculateRSI(closes)
       const prevRsi = calculateRSI(closes.slice(0, -1))
       const rsiState = getRSIState(rsi, prevRsi)
@@ -30,11 +28,9 @@ export default async function handler(req, res) {
 
       if (!rsi || !macd) continue
 
-      // সিগন্যাল চেক
       const signalResult = generateSignal({ sr, rsi, rsiState, macd, currentPrice })
 
       if (signalResult) {
-        // ডুপ্লিকেট চেক — শেষ ১ ঘন্টায় একই সিগন্যাল নেই তো?
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
         const { data: existing } = await supabase
           .from('signals')
@@ -46,7 +42,6 @@ export default async function handler(req, res) {
 
         if (existing && existing.length > 0) continue
 
-        // সিগন্যাল সেভ করো
         const { data, error } = await supabase.from('signals').insert({
           symbol,
           timeframe: '30m',
@@ -68,8 +63,8 @@ export default async function handler(req, res) {
         if (!error && data) results.push(data)
       }
 
-      // Rate limit এড়াতে ছোট বিরতি
-      await new Promise(r => setTimeout(r, 100))
+      // Rate limit — CoinGecko free: 30 calls/min
+      await new Promise(r => setTimeout(r, 2500))
 
     } catch (err) {
       errors.push({ symbol, error: err.message })
@@ -80,6 +75,6 @@ export default async function handler(req, res) {
     scanned: TOP_PAIRS.length,
     newSignals: results.length,
     signals: results,
-    errors: errors.length,
+    errors,
   })
-  }
+}
