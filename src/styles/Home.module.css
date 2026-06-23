@@ -1,0 +1,173 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  min-height: 100vh;
+  background: #0a0e1a;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 16px;
+}
+
+.header {
+  text-align: center;
+  padding: 24px 0 16px;
+  border-bottom: 1px solid #1e2a3a;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.header p {
+  color: #7a8a9a;
+  font-size: 13px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  background: #111827;
+  border: 1px solid #1e2a3a;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: #7a8a9a;
+  margin-top: 4px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.scanBtn {
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bold;
+  flex: 1;
+}
+
+.scanBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refreshBtn {
+  background: #1e2a3a;
+  color: #4fc3f7;
+  border: 1px solid #2a3a4a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  background: #111827;
+  color: #7a8a9a;
+  border: 1px solid #1e2a3a;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.activeFilter {
+  background: #1565c0;
+  color: #fff;
+  border: 1px solid #1565c0;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #1e2a3a;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  background: #111827;
+  color: #7a8a9a;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #1e2a3a;
+  white-space: nowrap;
+}
+
+.row:hover {
+  background: #111827;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7a8a9a;
+}
+
+.footer {
+  text-align: center;
+  padding: 24px 0;
+  color: #4a5a6a;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .statNumber {
+    font-size: 22px;
+  }
+  }
