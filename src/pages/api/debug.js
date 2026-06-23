@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   const symbol = req.query.symbol || 'BTCUSDT'
 
   try {
-    const { highs, lows, closes } = await fetchKlines(symbol, '15m', 100)
+    const { highs, lows, closes } = await fetchKlines(symbol)
     const currentPrice = closes[closes.length - 1]
 
     const rsi = calculateRSI(closes)
