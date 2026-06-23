@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   for (const symbol of TOP_PAIRS) {
     try {
-      const { highs, lows, closes } = await fetchKlines(symbol, '15m', 100)
+      const { highs, lows, closes } = await fetchKlines(symbol, '15min', 100)
       const currentPrice = closes[closes.length - 1]
 
       // ইন্ডিকেটর ক্যালকুলেশন
