@@ -1,9 +1,9 @@
-html, body {
-  padding: 0;
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
-  background: #0a0e1a;
+  padding: 0;
 }
 
-* {
-  box-sizing: border-box;
+html, body {
+  background: #0a0e1a;
 }
