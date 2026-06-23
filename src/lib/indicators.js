@@ -77,8 +77,8 @@ export function calculateMACD(closes) {
   if (prevMACD <= prevSignal && lastMACD > lastSignal) crossover = 'bullish'
   else if (prevMACD >= prevSignal && lastMACD < lastSignal) crossover = 'bearish'
 
-  const histBullish = lastHist > prevHist || lastHist > 0
-  const histBearish = lastHist < prevHist || lastHist < 0
+  const histBullish = lastHist > prevHist && lastHist > 0
+  const histBearish = lastHist < prevHist && lastHist < 0
 
   return { crossover, histogram: lastHist, histBullish, histBearish, macdAboveSignal: lastMACD > lastSignal }
 }
@@ -152,12 +152,12 @@ export function getGrade(score) {
 export function generateSignal({ sr, rsi, rsiState, macd, currentPrice }) {
 
   // RSI relax — oversold বা rising momentum
-  const rsiBuyOk = rsi < 45 && rsiState.momentum === 'rising'
-  const rsiSellOk = rsi > 55 && rsiState.momentum === 'falling'
+  const rsiBuyOk = rsi < 50
+  const rsiSellOk = rsi > 50
 
   // MACD relax — crossover অথবা macd above signal
-  const macdBuyOk = macd.crossover === 'bullish' || (macd.macdAboveSignal && macd.histBullish)
-  const macdSellOk = macd.crossover === 'bearish' || (!macd.macdAboveSignal && macd.histBearish)
+  const macdBuyOk = macd.crossover === 'bullish' || macd.histBullish
+  const macdSellOk = macd.crossover === 'bearish' || macd.histBearish
 
   // BUY সিগন্যাল
   if (sr.nearSupport && rsiBuyOk && macdBuyOk) {
@@ -199,3 +199,4 @@ export function generateSignal({ sr, rsi, rsiState, macd, currentPrice }) {
 
   return null
 }
+  
