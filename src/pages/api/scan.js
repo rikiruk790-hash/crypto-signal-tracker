@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         // সিগন্যাল সেভ করো
         const { data, error } = await supabase.from('signals').insert({
           symbol,
-          timeframe: '15m',
+          timeframe: '30m',
           signal_type: signalResult.signal,
           price_at_signal: currentPrice,
           support_price: sr.supportPrice,
@@ -82,4 +82,4 @@ export default async function handler(req, res) {
     signals: results,
     errors: errors.length,
   })
-}
+  }
