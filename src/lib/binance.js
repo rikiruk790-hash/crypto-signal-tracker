@@ -1,44 +1,70 @@
-// CoinGecko API — কোনো restriction নেই, সম্পূর্ণ ফ্রি
-const COINGECKO_BASE = 'https://api.coingecko.com/api/v3'
+const BINANCE_BASE = 'https://api.binance.com'
 
-// CoinGecko coin ID map
-const SYMBOL_TO_ID = {
-  'BTCUSDT': 'bitcoin', 'ETHUSDT': 'ethereum', 'BNBUSDT': 'binancecoin',
-  'SOLUSDT': 'solana', 'XRPUSDT': 'ripple', 'ADAUSDT': 'cardano',
-  'DOGEUSDT': 'dogecoin', 'AVAXUSDT': 'avalanche-2', 'DOTUSDT': 'polkadot',
-  'MATICUSDT': 'matic-network', 'LINKUSDT': 'chainlink', 'LTCUSDT': 'litecoin',
-  'UNIUSDT': 'uniswap', 'ATOMUSDT': 'cosmos', 'ETCUSDT': 'ethereum-classic',
-  'XLMUSDT': 'stellar', 'NEARUSDT': 'near', 'ALGOUSDT': 'algorand',
-  'APTUSDT': 'aptos', 'FILUSDT': 'filecoin', 'ARBUSDT': 'arbitrum',
-  'OPUSDT': 'optimism', 'INJUSDT': 'injective-protocol', 'SUIUSDT': 'sui',
-  'FETUSDT': 'fetch-ai', 'GRTUSDT': 'the-graph', 'SANDUSDT': 'the-sandbox',
-  'MANAUSDT': 'decentraland', 'AAVEUSDT': 'aave', 'MKRUSDT': 'maker',
-  'CRVUSDT': 'curve-dao-token', 'RUNEUSDT': 'thorchain', 'HBARUSDT': 'hedera-hashgraph',
-  'ICPUSDT': 'internet-computer', 'VETUSDT': 'vechain', 'THETAUSDT': 'theta-token',
-  'ZECUSDT': 'zcash', 'FLOWUSDT': 'flow', 'EGLDUSDT': 'elrond-erd-2',
-  'FTMUSDT': 'fantom', 'COMPUSDT': 'compound-governance-token', 'SNXUSDT': 'synthetix-network-token',
-  'APEUSDT': 'apecoin', 'SEIUSDT': 'sei-network', 'WLDUSDT': 'worldcoin-wld',
-  'TIAUSDT': 'celestia', 'ROSEUSDT': 'oasis-network', 'ONEUSDT': 'harmony',
-  'KSMUSDT': 'kusama', 'QNTUSDT': 'quant-network'
-}
+export const TOP_PAIRS = [
+  // Top Major
+  'BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT',
+  'ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT',
+  'LINKUSDT','LTCUSDT','UNIUSDT','ATOMUSDT','ETCUSDT',
+  'XLMUSDT','NEARUSDT','ALGOUSDT','APTUSDT','FILUSDT',
+  'ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','SEIUSDT',
+  'TIAUSDT','WLDUSDT','FETUSDT','GRTUSDT','SANDUSDT',
+  'MANAUSDT','APEUSDT','AAVEUSDT','MKRUSDT','SNXUSDT',
+  'COMPUSDT','CRVUSDT','RUNEUSDT','FTMUSDT','HBARUSDT',
+  'EGLDUSDT','FLOWUSDT','ICPUSDT','VETUSDT','THETAUSDT',
+  'QNTUSDT','KSMUSDT','ZECUSDT','ONEUSDT','ROSEUSDT',
+  // DeFi
+  'SUSHIUSDT','YFIUSDT','BALUSDT','KNCUSDT','BANDUSDT',
+  'ANKRUSDT','SKLUSDT','STORJUSDT','IOTAUSDT','TRXUSDT',
+  'EOSUSDT','XTZUSDT','ZENUSDT','ICXUSDT','IOSTUSDT',
+  'ONTUSDT','NEOUSDT','XMRUSDT','DASHUSDT','WAVESUSDT',
+  'ZILUSDT','BATUSDT','ENJUSDT','CHZUSDT','GALAUSDT',
+  // Gaming & NFT
+  'AXSUSDT','SLPUSDT','RAREUSDT','NFTUSDT','ELFUSDT',
+  'ALICEUSDT','TLMUSDT','ALPACAUSDT','DYDXUSDT','IMXUSDT',
+  'GMTUSDT','STEPNUSDT','MAGICUSDT','RNDRUSDT','HIGHUSDT',
+  'STXUSDT','CFXUSDT','WOOUSDT','ACHUSDT','IDUSDT',
+  // Layer 1 & 2
+  'KASUSDT','TONUSDT','MOVEUSDT','EIGENUSDT','MEWUSDT',
+  'NOTUSDT','DOGSUSDT','HMSTRUSDT','CATUSDT','BANANAUSDT',
+  'TURBOUSDT','MEMEUSDT','PEPEUSDT','SHIBUSDT','FLOKIUSDT',
+  'BONKUSDT','WIFUSDT','BOMEUSDT','SAFEUSDT','TAIKOUSDT',
+  // Mid Cap
+  'LRCUSDT','COTIUSDT','CTSIUSDT','TRUUSDT','BONDUSDT',
+  'LPTUSDT','ACHUSDT','PERPUSDT','RGTUSDT','BADGERUSDT',
+  'DIAUSDT','LINAUSDT','LITUSDT','POLSUSDT','DEXEUSDT',
+  'ALPHAAUSDT','PRQUSDT','GTCUSDT','FARMUSDT','RARUSDT',
+  'IDEXUSDT','COVERUSDT','PICKLEUSDT','POWRUSDT','AUDIOUSDT',
+  'CELRUSDT','DENTUSDT','HOTUSDT','VETUSDT','WINUSDT',
+  'SUNUSDT','BTTUSDT','JSTUSDT','NKNUSDT','SCUSDT',
+  'DGBUSDT','RVNUSDT','MTLUSDT','STMXUSDT','RIFUSDT',
+  'AKROUSDT','CTKUSDT','HARDUSDT','UNFIUSDT','OXTUSDT',
+  'PAXGUSDT','RLCUSDT','MDTUSDT','DOCKUSDT','PERLUSDT',
+  // New & Trending
+  'PYTHUSDT','JUPUSDT','JITOUSDT','WUSDT','STRKUSDT',
+  'ALTUSDT','DYMUSDT','PIXELUSDT','PORTALUSDT','AIUSDT',
+  'MANTAUSDT','ZKUSDT','ZROUSDT','LISTAUSDT','IOUSDT',
+  'REZUSDT','ENAUSDT','MERLINUSDT','SAGAUSDT','OMNIUSDT',
+  'VANRYUSDT','ATAUSDT','BIOXUSDT','AEVOUSDT','PDAUSDT',
+  // More Alts
+  'HFTUSDT','PHBUSDT','AMBUSDT','HOOKUSDT','MAGAUSDT',
+  'RDNTUSDT','UFTUSDT','LQTYUSDT','CVXUSDT','FXSUSDT',
+  'FRAXUSDT','LDOUSDT','RPLUSDT','SSVUSDT','OMUSDT',
+  'PENDLEUSDT','TRBUSDT','UMAUSDT','BLZUSDT','AGIXUSDT',
+  'OCEANUSDT','NMRUSDT','RNDROUSDT','VRUSDT','CTXCUSDT',
+  'STGUSDT','WOMBATUSDT','ARBUSDT','GMXUSDT','GNSUSDT',
+  'CAPUSDT','LEVUSDT','KWENTAUSDT','SXUSDT','JASMYUSDT',
+  'MDAUSDT','KLAYUSDT','CYBERUSDT','ARKMUSDT','ORDIUSDT',
+  'SATSUSDT','RATS0USDT','MERCHUSDT','MULTIUSDT','XAIUSDT',
+  'RONINUSDT','RONUSDT','ACEUSDT','NFPUSDT','AIUSDT',
+  'COSUSDT','ONGUSDT','GASUSDT','NULSUSDT','WNXMUSDT'
+]
 
-export const TOP_PAIRS = Object.keys(SYMBOL_TO_ID)
-
-// CoinGecko OHLC — 1 day = 30m candles (48 candles)
-export async function fetchKlines(symbol) {
-  const coinId = SYMBOL_TO_ID[symbol]
-  if (!coinId) throw new Error(`Unknown symbol: ${symbol}`)
-
-  const url = `${COINGECKO_BASE}/coins/${coinId}/ohlc?vs_currency=usd&days=1`
-
-  const res = await fetch(url, {
-    headers: { 'Accept': 'application/json' }
-  })
-  if (!res.ok) throw new Error(`CoinGecko error: ${res.status}`)
+export async function fetchKlines(symbol, interval = '30m', limit = 100) {
+  const url = `${BINANCE_BASE}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Binance error: ${res.status}`)
   const data = await res.json()
-
-  if (!data || data.length < 10) throw new Error(`Not enough data`)
-
+  if (!Array.isArray(data) || data.length < 40) throw new Error(`Not enough data`)
   return {
     opens:  data.map(k => parseFloat(k[1])),
     highs:  data.map(k => parseFloat(k[2])),
@@ -47,13 +73,11 @@ export async function fetchKlines(symbol) {
   }
 }
 
-// লাইভ প্রাইস
 export async function fetchPrice(symbol) {
-  const coinId = SYMBOL_TO_ID[symbol]
-  if (!coinId) throw new Error(`Unknown symbol: ${symbol}`)
-  const url = `${COINGECKO_BASE}/simple/price?ids=${coinId}&vs_currencies=usd`
+  const url = `${BINANCE_BASE}/api/v3/ticker/price?symbol=${symbol}`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Price fetch error`)
   const json = await res.json()
-  return parseFloat(json[coinId].usd)
-}
+  return parseFloat(json.price)
+  }
+  
