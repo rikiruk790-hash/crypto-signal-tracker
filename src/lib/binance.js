@@ -1,83 +1,59 @@
-const BINANCE_BASE = 'https://api.binance.com'
+// CryptoCompare API — কোনো geo-restriction নেই, সম্পূর্ণ ফ্রি
+const CC_BASE = 'https://min-api.cryptocompare.com/data'
 
-export const TOP_PAIRS = [
-  // Top Major
-  'BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT',
-  'ADAUSDT','DOGEUSDT','AVAXUSDT','DOTUSDT','MATICUSDT',
-  'LINKUSDT','LTCUSDT','UNIUSDT','ATOMUSDT','ETCUSDT',
-  'XLMUSDT','NEARUSDT','ALGOUSDT','APTUSDT','FILUSDT',
-  'ARBUSDT','OPUSDT','INJUSDT','SUIUSDT','SEIUSDT',
-  'TIAUSDT','WLDUSDT','FETUSDT','GRTUSDT','SANDUSDT',
-  'MANAUSDT','APEUSDT','AAVEUSDT','MKRUSDT','SNXUSDT',
-  'COMPUSDT','CRVUSDT','RUNEUSDT','FTMUSDT','HBARUSDT',
-  'EGLDUSDT','FLOWUSDT','ICPUSDT','VETUSDT','THETAUSDT',
-  'QNTUSDT','KSMUSDT','ZECUSDT','ONEUSDT','ROSEUSDT',
-  // DeFi
-  'SUSHIUSDT','YFIUSDT','BALUSDT','KNCUSDT','BANDUSDT',
-  'ANKRUSDT','SKLUSDT','STORJUSDT','IOTAUSDT','TRXUSDT',
-  'EOSUSDT','XTZUSDT','ZENUSDT','ICXUSDT','IOSTUSDT',
-  'ONTUSDT','NEOUSDT','XMRUSDT','DASHUSDT','WAVESUSDT',
-  'ZILUSDT','BATUSDT','ENJUSDT','CHZUSDT','GALAUSDT',
-  // Gaming & NFT
-  'AXSUSDT','SLPUSDT','RAREUSDT','NFTUSDT','ELFUSDT',
-  'ALICEUSDT','TLMUSDT','ALPACAUSDT','DYDXUSDT','IMXUSDT',
-  'GMTUSDT','STEPNUSDT','MAGICUSDT','RNDRUSDT','HIGHUSDT',
-  'STXUSDT','CFXUSDT','WOOUSDT','ACHUSDT','IDUSDT',
-  // Layer 1 & 2
-  'KASUSDT','TONUSDT','MOVEUSDT','EIGENUSDT','MEWUSDT',
-  'NOTUSDT','DOGSUSDT','HMSTRUSDT','CATUSDT','BANANAUSDT',
-  'TURBOUSDT','MEMEUSDT','PEPEUSDT','SHIBUSDT','FLOKIUSDT',
-  'BONKUSDT','WIFUSDT','BOMEUSDT','SAFEUSDT','TAIKOUSDT',
-  // Mid Cap
-  'LRCUSDT','COTIUSDT','CTSIUSDT','TRUUSDT','BONDUSDT',
-  'LPTUSDT','ACHUSDT','PERPUSDT','RGTUSDT','BADGERUSDT',
-  'DIAUSDT','LINAUSDT','LITUSDT','POLSUSDT','DEXEUSDT',
-  'ALPHAAUSDT','PRQUSDT','GTCUSDT','FARMUSDT','RARUSDT',
-  'IDEXUSDT','COVERUSDT','PICKLEUSDT','POWRUSDT','AUDIOUSDT',
-  'CELRUSDT','DENTUSDT','HOTUSDT','VETUSDT','WINUSDT',
-  'SUNUSDT','BTTUSDT','JSTUSDT','NKNUSDT','SCUSDT',
-  'DGBUSDT','RVNUSDT','MTLUSDT','STMXUSDT','RIFUSDT',
-  'AKROUSDT','CTKUSDT','HARDUSDT','UNFIUSDT','OXTUSDT',
-  'PAXGUSDT','RLCUSDT','MDTUSDT','DOCKUSDT','PERLUSDT',
-  // New & Trending
-  'PYTHUSDT','JUPUSDT','JITOUSDT','WUSDT','STRKUSDT',
-  'ALTUSDT','DYMUSDT','PIXELUSDT','PORTALUSDT','AIUSDT',
-  'MANTAUSDT','ZKUSDT','ZROUSDT','LISTAUSDT','IOUSDT',
-  'REZUSDT','ENAUSDT','MERLINUSDT','SAGAUSDT','OMNIUSDT',
-  'VANRYUSDT','ATAUSDT','BIOXUSDT','AEVOUSDT','PDAUSDT',
-  // More Alts
-  'HFTUSDT','PHBUSDT','AMBUSDT','HOOKUSDT','MAGAUSDT',
-  'RDNTUSDT','UFTUSDT','LQTYUSDT','CVXUSDT','FXSUSDT',
-  'FRAXUSDT','LDOUSDT','RPLUSDT','SSVUSDT','OMUSDT',
-  'PENDLEUSDT','TRBUSDT','UMAUSDT','BLZUSDT','AGIXUSDT',
-  'OCEANUSDT','NMRUSDT','RNDROUSDT','VRUSDT','CTXCUSDT',
-  'STGUSDT','WOMBATUSDT','ARBUSDT','GMXUSDT','GNSUSDT',
-  'CAPUSDT','LEVUSDT','KWENTAUSDT','SXUSDT','JASMYUSDT',
-  'MDAUSDT','KLAYUSDT','CYBERUSDT','ARKMUSDT','ORDIUSDT',
-  'SATSUSDT','RATS0USDT','MERCHUSDT','MULTIUSDT','XAIUSDT',
-  'RONINUSDT','RONUSDT','ACEUSDT','NFPUSDT','AIUSDT',
-  'COSUSDT','ONGUSDT','GASUSDT','NULSUSDT','WNXMUSDT'
+// Symbol map — CryptoCompare শুধু base symbol চেনে
+const PAIRS = [
+  'BTC','ETH','BNB','SOL','XRP','ADA','DOGE','AVAX','DOT','MATIC',
+  'LINK','LTC','UNI','ATOM','ETC','XLM','NEAR','ALGO','APT','FIL',
+  'ARB','OP','INJ','SUI','SEI','TIA','WLD','FET','GRT','SAND',
+  'MANA','APE','AAVE','MKR','SNX','COMP','CRV','RUNE','FTM','HBAR',
+  'EGLD','FLOW','ICP','VET','THETA','QNT','KSM','ZEC','ONE','ROSE',
+  'GALA','CHZ','ENJ','BAT','ZIL','WAVES','DASH','XMR','NEO','ONT',
+  'IOST','ICX','ZEN','XTZ','EOS','TRX','IOTA','STORJ','SKL','ANKR',
+  'BAND','KNC','BAL','YFI','SUSHI','ALPHA','LIT','STX','CFX','WOO',
+  'PEPE','SHIB','FLOKI','BONK','WIF','MEME','RNDR','IMX','GMt','STG',
+  'LDO','RPL','SSV','OM','PENDLE','TRB','UMA','AGIX','OCEAN','NMR',
+  'GMX','DYDX','MAGIC','HIGH','WOO','ACH','ID','KAS','TON','PYTH',
+  'JUP','STRK','ALT','DYM','PIXEL','AI','MANTA','ZK','ZRO','ENA',
+  'ORDI','SATS','RONIN','RON','ACE','CYBER','ARKM','JASMAY','OM','BLUR',
+  'RDNT','CVX','FXS','LQT','UFT','LQTY','HFT','PHB','AMB','HOOK',
+  'AUDIO','CELR','DENT','HOT','WIN','SUN','BTT','JST','NKN','SC',
+  'DGB','RVN','MTL','STMX','RIF','AKRO','CTK','UNFI','OXT','PAXG',
+  'RLC','MDT','DOCK','PERL','LRC','COTI','CTSI','TRU','BOND','LPT',
+  'PERP','BAD','DIA','LINA','POLS','DEXE','PRQ','GTC','POW','IDEX',
+  'FIDA','STEP','GENE','MEDIA','MNGO','SAMO','RAY','SRM','COPE','OXY'
 ]
 
-export async function fetchKlines(symbol, interval = '30m', limit = 100) {
-  const url = `${BINANCE_BASE}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+export const TOP_PAIRS = PAIRS.map(s => `${s}USDT`)
+
+// CryptoCompare থেকে 30m OHLCV data
+export async function fetchKlines(symbol) {
+  const base = symbol.replace('USDT', '')
+  const url = `${CC_BASE}/v2/histominute?fsym=${base}&tsym=USDT&limit=100&aggregate=30`
+
   const res = await fetch(url)
-  if (!res.ok) throw new Error(`Binance error: ${res.status}`)
-  const data = await res.json()
-  if (!Array.isArray(data) || data.length < 40) throw new Error(`Not enough data`)
+  if (!res.ok) throw new Error(`CC error: ${res.status}`)
+  const json = await res.json()
+
+  if (json.Response === 'Error') throw new Error(`CC: ${json.Message}`)
+  const data = json.Data?.Data
+  if (!data || data.length < 40) throw new Error(`Not enough data for ${base}`)
+
   return {
-    opens:  data.map(k => parseFloat(k[1])),
-    highs:  data.map(k => parseFloat(k[2])),
-    lows:   data.map(k => parseFloat(k[3])),
-    closes: data.map(k => parseFloat(k[4])),
+    opens:  data.map(k => k.open),
+    highs:  data.map(k => k.high),
+    lows:   data.map(k => k.low),
+    closes: data.map(k => k.close),
   }
 }
 
+// লাইভ প্রাইস
 export async function fetchPrice(symbol) {
-  const url = `${BINANCE_BASE}/api/v3/ticker/price?symbol=${symbol}`
+  const base = symbol.replace('USDT', '')
+  const url = `${CC_BASE}/price?fsym=${base}&tsyms=USDT`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Price fetch error`)
   const json = await res.json()
-  return parseFloat(json.price)
-  }
-  
+  if (!json.USDT) throw new Error(`No price for ${base}`)
+  return parseFloat(json.USDT)
+}
