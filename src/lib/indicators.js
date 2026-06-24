@@ -152,8 +152,8 @@ export function getGrade(score) {
 export function generateSignal({ sr, rsi, rsiState, macd, currentPrice }) {
 
   // RSI relax — oversold বা rising momentum
-  const rsiBuyOk = rsi < 50
-  const rsiSellOk = rsi > 50
+  const rsiBuyOk = rsi < 55
+  const rsiSellOk = rsi > 45
 
   // MACD relax — crossover অথবা macd above signal
   const macdBuyOk = macd.crossover === 'bullish' || macd.histBullish
@@ -198,5 +198,5 @@ export function generateSignal({ sr, rsi, rsiState, macd, currentPrice }) {
   }
 
   return null
-}
-  
+      }
+      
