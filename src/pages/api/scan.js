@@ -17,8 +17,10 @@ export default async function handler(req, res) {
 
   for (const symbol of TOP_PAIRS) {
     try {
-      const { highs, lows, closes } = await fetchKlines(symbol, '30m', 100)
+      const { highs, lows, closes } = await fetchKlines(symbol)
       const currentPrice = closes[closes.length - 1]
+
+      if (currentPrice === 0) continue
 
       const rsi = calculateRSI(closes)
       const prevRsi = calculateRSI(closes.slice(0, -1))
@@ -63,7 +65,7 @@ export default async function handler(req, res) {
         if (!error && data) results.push(data)
       }
 
-      await new Promise(r => setTimeout(r, 50))
+      await new Promise(r => setTimeout(r, 200))
 
     } catch (err) {
       errors.push({ symbol, error: err.message })
