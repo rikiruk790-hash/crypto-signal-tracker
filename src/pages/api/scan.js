@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
   for (const symbol of TOP_PAIRS) {
     try {
-      const { highs, lows, closes } = await fetchKlines(symbol)
+      const { highs, lows, closes } = await fetchKlines(symbol, '30m', 100)
       const currentPrice = closes[closes.length - 1]
 
       const rsi = calculateRSI(closes)
@@ -63,8 +63,7 @@ export default async function handler(req, res) {
         if (!error && data) results.push(data)
       }
 
-      // Rate limit — CoinGecko free: 30 calls/min
-      await new Promise(r => setTimeout(r, 2500))
+      await new Promise(r => setTimeout(r, 50))
 
     } catch (err) {
       errors.push({ symbol, error: err.message })
